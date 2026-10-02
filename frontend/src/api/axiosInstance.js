@@ -1,11 +1,13 @@
 import axios from 'axios';
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://shopsphere-1-1ilk.onrender.com';
+
 const axiosInstance = axios.create({
-  baseURL: 'https://shopsphere-1-1ilk.onrender.com',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true 
+  withCredentials: false,
 });
 
 

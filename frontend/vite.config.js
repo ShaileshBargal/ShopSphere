@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://shopsphere-2-1bia.onrender.com',
+        target: 'https://shopsphere-1-1ilk.onrender.com',
         changeOrigin: true,
         secure: false
       }

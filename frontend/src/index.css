@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans antialiased;
+  }
+
+  * {
+    @apply transition-colors duration-150;
+  }
+}
+
+/* ─── Custom smooth scrollbar ─── */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ─── Slide-up toast animation ─── */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ─── Fade-in animation ─── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+/* ─── Gradient text utility ─── */
+.gradient-text {
+  @apply bg-gradient-to-r from-teal-500 via-emerald-400 to-teal-300 bg-clip-text text-transparent;
+}
+
+/* ─── Glass card effect ─── */
+.glass-card {
+  @apply bg-white/80 backdrop-blur-sm border border-white/40 shadow-lg;
+}
+
+/* ─── Product card hover shadow ─── */
+.product-card-hover {
+  transition: transform 0.2s cubic-bezier(0.34, 1.28, 0.64, 1),
+              box-shadow 0.2s ease;
+}
+.product-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(20, 184, 166, 0.15),
+              0 8px 16px -8px rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Teal glow focus ring for inputs ─── */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
+}
+
+/* ─── Razorpay button style ─── */
+.btn-razorpay {
+  @apply bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold transition-all shadow-md;
+}
+
+/* ─── Pulse badge ─── */
+.badge-pulse {
+  animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ─── Shimmer loading skeleton ─── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}

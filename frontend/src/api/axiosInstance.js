@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://shopsphere-1-1ilk.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true 
 });
+
 
 // Request interceptor: attach token from localStorage
 axiosInstance.interceptors.request.use(

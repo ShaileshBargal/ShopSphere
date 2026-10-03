@@ -5,25 +5,15 @@ import nodemailer from 'nodemailer';
  * Requires EMAIL_USER and EMAIL_APP_PASSWORD in backend/.env
  */
 export const createTransporter = () => {
-  const user = process.env.EMAIL_USER;
-  // Remove any spaces if user pasted a grouped 16-character Google App password (e.g. "abcd efgh ijkl mnop")
-  const pass = process.env.EMAIL_APP_PASSWORD ? process.env.EMAIL_APP_PASSWORD.replace(/\s+/g, '') : '';
-
-  if (!user || !pass) {
-    return null;
-  }
+  const user = process.env.EMAIL_USER || 'shaileshbargal@gmail.com';
+  const pass = (process.env.EMAIL_APP_PASSWORD || 'vriogqvarqmdckoo').replace(/\s+/g, '');
 
   return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    service: 'gmail',
     auth: {
       user,
       pass,
     },
-    connectionTimeout: 8000,
-    greetingTimeout: 8000,
-    socketTimeout: 8000,
   });
 };
 
@@ -32,16 +22,10 @@ export const createTransporter = () => {
  */
 export const sendEmail = async ({ to, subject, html, text }) => {
   const transporter = createTransporter();
-
-  if (!transporter) {
-    console.warn('[Email Warning] EMAIL_USER or EMAIL_APP_PASSWORD is not configured in backend/.env');
-    throw new Error(
-      'Email service not configured. Please set EMAIL_USER and EMAIL_APP_PASSWORD (Google App Password) in backend/.env'
-    );
-  }
+  const senderEmail = process.env.EMAIL_USER || 'shaileshbargal@gmail.com';
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || `"ShopSphere Security" <${process.env.EMAIL_USER}>`,
+    from: process.env.EMAIL_FROM || `"ShopSphere Security" <${senderEmail}>`,
     to,
     subject,
     text: text || 'ShopSphere Notification',

@@ -152,25 +152,21 @@ export const forgotPassword = async (req, res) => {
     const otp = user.getResetPasswordOtp();
     await user.save({ validateBeforeSave: false });
 
-    // Send OTP via Google Gmail SMTP
+    // Send OTP via Google Gmail SMTP from shaileshbargal@gmail.com
     try {
       await sendOtpEmail(user.email, otp, user.name);
-      console.log(`[ShopSphere] OTP email successfully delivered to ${user.email}`);
+      console.log(`[ShopSphere] OTP email successfully delivered to ${user.email} from shaileshbargal@gmail.com`);
 
       return res.status(200).json({
         success: true,
-        message: `A 6-digit verification code has been sent to ${user.email}. Please check your email inbox and spam folder.`,
+        message: `OTP has been sent to ${user.email}. Please check your inbox or spam folder.`,
         email: user.email,
         expiresInMinutes: 10,
       });
     } catch (err) {
-      console.warn(`[ShopSphere] SMTP delivery warning (e.g. cloud provider port restriction):`, err.message);
-      return res.status(200).json({
-        success: true,
-        message: `Verification code generated! (Cloud email gateway delayed — your code: ${otp})`,
-        email: user.email,
-        expiresInMinutes: 10,
-        devOtp: otp,
+      console.error(`[ShopSphere] Failed to send email via Google SMTP:`, err.message);
+      return res.status(500).json({
+        message: `Failed to send verification email to ${user.email}. Please try again shortly.`,
       });
     }
   } catch (error) {

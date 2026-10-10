@@ -1,14 +1,19 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { X, ShoppingCart, Heart, Star, Tag, ExternalLink, Zap } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
 
 const QuickViewModal = ({ product, onClose }) => {
+  const { user } = useAuth();
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { showToast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const wishlisted = isWishlisted(product._id);
 
   const discountPercent =
@@ -28,8 +33,21 @@ const QuickViewModal = ({ product, onClose }) => {
   }, [onClose]);
 
   const handleAddToCart = () => {
+    if (!user) {
+      showToast('Please sign in to add items to your cart', 'info');
+      onClose();
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     if (product.countInStock === 0) return;
-    addToCart(product);
+    const result = addToCart(product);
+    if (result?.requireAuth) {
+      showToast('Please sign in to add items to your cart', 'info');
+      onClose();
+      navigate('/login', { state: { from: location } });
+      return;
+    }
     showToast(`"${product.name}" added to cart!`, 'success');
     onClose();
   };
@@ -49,7 +67,7 @@ const QuickViewModal = ({ product, onClose }) => {
 
       {/* Modal Panel */}
       <div
-        className="relative z-10 w-full sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+        className="relative z-10 w-full sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}

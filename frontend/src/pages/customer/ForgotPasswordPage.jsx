@@ -236,7 +236,7 @@ const ForgotPasswordPage = () => {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm space-y-5">
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-8 shadow-sm space-y-5">
           {error && (
             <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-start space-x-2">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
@@ -297,7 +297,7 @@ const ForgotPasswordPage = () => {
                   </span>
                 </div>
 
-                <div className="flex justify-between gap-2" onPaste={handleOtpPaste}>
+                <div className="flex justify-between gap-1.5 sm:gap-2" onPaste={handleOtpPaste}>
                   {otp.map((digit, idx) => (
                     <input
                       key={idx}
@@ -311,7 +311,7 @@ const ForgotPasswordPage = () => {
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(idx, e)}
-                      className={`w-11 h-12 text-center font-mono font-black text-lg rounded-xl border ${
+                      className={`w-9 sm:w-11 h-11 sm:h-12 text-center font-mono font-black text-base sm:text-lg rounded-xl border ${
                         digit
                           ? 'border-teal-500 bg-white text-slate-900'
                           : 'border-slate-200 bg-slate-50/50 text-slate-900'

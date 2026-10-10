@@ -250,7 +250,7 @@ const CheckoutPage = () => {
         {/* Left 2 Columns */}
         <div className="lg:col-span-2 space-y-6">
           {/* 1. Shipping Address */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-6 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 text-slate-900 font-bold text-sm pb-3 border-b border-slate-100">
               <Truck size={18} className="text-teal-600" />
               <span>1. Shipping Details</span>
@@ -331,7 +331,7 @@ const CheckoutPage = () => {
           </div>
 
           {/* 2. Payment Method */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-6 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 text-slate-900 font-bold text-sm pb-3 border-b border-slate-100">
               <Lock size={18} className="text-teal-600" />
               <span>2. Payment Method</span>
@@ -343,7 +343,7 @@ const CheckoutPage = () => {
                 return (
                   <label
                     key={value}
-                    className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
+                    className={`flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 sm:p-4 rounded-2xl border cursor-pointer gap-2 sm:gap-0 transition-all ${
                       isSelected
                         ? highlight
                           ? 'border-blue-500 bg-blue-50/60 ring-2 ring-blue-500/20'
@@ -371,7 +371,7 @@ const CheckoutPage = () => {
                       </div>
                     </div>
                     {badge && (
-                      <span className="text-[10px] font-bold bg-blue-600 text-white px-2 py-0.5 rounded-full ml-2">
+                      <span className="text-[10px] font-bold bg-blue-600 text-white px-2 py-0.5 rounded-full self-start sm:self-auto sm:ml-2">
                         {badge}
                       </span>
                     )}
@@ -395,7 +395,7 @@ const CheckoutPage = () => {
         </div>
 
         {/* Right Column: Order Review */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-6 sticky top-24">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-6 shadow-sm space-y-6 sticky top-24">
           <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
             Review & Place Order
           </h3>

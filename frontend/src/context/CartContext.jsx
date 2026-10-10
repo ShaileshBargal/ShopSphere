@@ -1,12 +1,37 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+  const { user } = useAuth();
+
+  const getStorageKey = () => {
+    return user ? `shopsphere_cart_${user._id}` : 'shopsphere_cart';
+  };
+
   const [cartItems, setCartItems] = useState(() => {
-    const saved = localStorage.getItem('shopsphere_cart');
+    const savedUser = localStorage.getItem('shopsphere_user');
+    let userId = null;
+    if (savedUser) {
+      try {
+        userId = JSON.parse(savedUser)?._id;
+      } catch (e) {}
+    }
+    const key = userId ? `shopsphere_cart_${userId}` : 'shopsphere_cart';
+    const saved = localStorage.getItem(key);
     return saved ? JSON.parse(saved) : [];
   });
+
+  // Re-sync cart when user changes (login or logout)
+  useEffect(() => {
+    if (user) {
+      const userCart = localStorage.getItem(`shopsphere_cart_${user._id}`);
+      setCartItems(userCart ? JSON.parse(userCart) : []);
+    } else {
+      setCartItems([]);
+    }
+  }, [user?._id]);
 
   const [shippingAddress, setShippingAddress] = useState(() => {
     const saved = localStorage.getItem('shopsphere_shipping');
@@ -17,7 +42,7 @@ export const CartProvider = ({ children }) => {
           address: '',
           city: '',
           postalCode: '',
-          country: 'United States',
+          country: 'India',
           phone: '',
         };
   });
@@ -28,8 +53,10 @@ export const CartProvider = ({ children }) => {
 
   // Persist to localStorage
   useEffect(() => {
-    localStorage.setItem('shopsphere_cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (user) {
+      localStorage.setItem(`shopsphere_cart_${user._id}`, JSON.stringify(cartItems));
+    }
+  }, [cartItems, user]);
 
   useEffect(() => {
     localStorage.setItem('shopsphere_shipping', JSON.stringify(shippingAddress));
@@ -39,9 +66,14 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('shopsphere_payment_method', paymentMethod);
   }, [paymentMethod]);
 
-  // Add item to cart
+  // Add item to cart - requires user authentication
   const addToCart = (product, qty = 1) => {
-    const existingIndex = cartItems.findIndex((item) => item.product === product._id);
+    if (!user) {
+      return { success: false, requireAuth: true };
+    }
+
+    const productId = product._id || product.id || product.product;
+    const existingIndex = cartItems.findIndex((item) => item.product === productId);
     const maxStock = product.countInStock || 10;
 
     if (existingIndex > -1) {
@@ -53,9 +85,9 @@ export const CartProvider = ({ children }) => {
       setCartItems(updated);
     } else {
       const newItem = {
-        product: product._id,
+        product: productId,
         name: product.name,
-        image: product.images?.[0] || '',
+        image: Array.isArray(product.images) ? product.images[0] : (product.image || ''),
         price: product.price,
         countInStock: product.countInStock,
         vendor: product.vendor?.storeName || product.vendor?.name || 'Verified Seller',
@@ -63,6 +95,8 @@ export const CartProvider = ({ children }) => {
       };
       setCartItems([...cartItems, newItem]);
     }
+
+    return { success: true };
   };
 
   // Update item quantity

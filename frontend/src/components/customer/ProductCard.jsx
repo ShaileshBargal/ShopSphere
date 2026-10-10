@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, Heart, Star, Eye, Tag, Zap } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
 import QuickViewModal from './QuickViewModal';
 
 const ProductCard = ({ product }) => {
+  const { user } = useAuth();
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { showToast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
 
@@ -22,9 +27,22 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!user) {
+      showToast('Please sign in to add items to your cart', 'info');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     if (product.countInStock === 0) return;
     setAddingToCart(true);
-    addToCart(product);
+    const result = addToCart(product);
+    if (result?.requireAuth) {
+      showToast('Please sign in to add items to your cart', 'info');
+      navigate('/login', { state: { from: location } });
+      setAddingToCart(false);
+      return;
+    }
     showToast(`"${product.name}" added to cart!`, 'success');
     setTimeout(() => setAddingToCart(false), 800);
   };
@@ -74,19 +92,20 @@ const ProductCard = ({ product }) => {
           {/* Wishlist Button */}
           <button
             onClick={handleToggleWishlist}
-            className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${
+            className={`absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 z-10 ${
               wishlisted
-                ? 'bg-rose-500 text-white scale-110'
-                : 'bg-white/90 text-slate-400 hover:bg-rose-50 hover:text-rose-500 opacity-0 group-hover:opacity-100'
+                ? 'bg-rose-500 text-white scale-105'
+                : 'bg-white/95 text-slate-500 hover:bg-rose-50 hover:text-rose-500 opacity-90 sm:opacity-0 sm:group-hover:opacity-100'
             }`}
+            title={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             <Heart size={15} fill={wishlisted ? 'currentColor' : 'none'} />
           </button>
 
-          {/* Quick View Button */}
+          {/* Quick View Button (Desktop/Tablet) */}
           <button
             onClick={(e) => { e.preventDefault(); setQuickViewOpen(true); }}
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center space-x-1.5 bg-white/95 hover:bg-white text-slate-800 text-[11px] font-bold px-4 py-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 whitespace-nowrap"
+            className="hidden sm:flex absolute bottom-3 left-1/2 -translate-x-1/2 items-center space-x-1.5 bg-white/95 hover:bg-white text-slate-800 text-[11px] font-bold px-4 py-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 whitespace-nowrap"
           >
             <Eye size={12} />
             <span>Quick View</span>
@@ -94,7 +113,7 @@ const ProductCard = ({ product }) => {
         </Link>
 
         {/* Card Body */}
-        <div className="p-4 space-y-3">
+        <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
           {/* Vendor */}
           {product.vendor?.storeName && (
             <p className="text-[10px] font-semibold uppercase tracking-wider text-teal-600 truncate">

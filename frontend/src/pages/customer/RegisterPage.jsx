@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingBag, Lock, Mail, User, Phone, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -13,6 +13,19 @@ const RegisterPage = () => {
 
   const { register, loading, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const getRedirectPath = () => {
+    const from = location.state?.from;
+    if (!from) return '/';
+    if (typeof from === 'string') return from;
+    if (from.pathname) {
+      return from.pathname + (from.search || '') + (from.hash || '');
+    }
+    return '/';
+  };
+
+  const redirectPath = getRedirectPath();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +42,7 @@ const RegisterPage = () => {
 
     const result = await register({ name, email, phone, password });
     if (result.success) {
-      navigate('/');
+      navigate(redirectPath);
     }
   };
 
@@ -142,7 +155,11 @@ const RegisterPage = () => {
 
           <div className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
             Already have an account?{' '}
-            <Link to="/login" className="font-bold text-teal-600 hover:underline">
+            <Link
+              to="/login"
+              state={{ from: location.state?.from }}
+              className="font-bold text-teal-600 hover:underline"
+            >
               Sign In
             </Link>
           </div>

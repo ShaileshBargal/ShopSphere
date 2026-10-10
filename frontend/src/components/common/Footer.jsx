@@ -31,7 +31,7 @@ const Footer = () => {
     <footer className="bg-slate-900 text-slate-300 mt-auto border-t border-slate-800">
       {/* Value propositions banner */}
       <div className="border-b border-slate-800 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {[
             { icon: Truck, title: 'Free Fast Shipping', desc: 'On all orders over ₹150' },
             { icon: ShieldCheck, title: 'Verified Multi-Vendors', desc: '100% authentic curated sellers' },

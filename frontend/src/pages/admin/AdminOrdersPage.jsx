@@ -56,10 +56,10 @@ const AdminOrdersPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50">
       <AdminSidebar />
 
-      <main className="flex-1 p-6 sm:p-10 space-y-8 overflow-y-auto">
+      <main className="flex-1 p-4 sm:p-6 lg:p-10 space-y-6 sm:space-y-8 overflow-y-auto pt-16 lg:pt-8 w-full max-w-full min-w-0">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

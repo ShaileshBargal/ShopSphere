@@ -100,28 +100,28 @@ const ProfilePage = () => {
         </div>
 
         {/* Tab switcher */}
-        <div className="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold">
+        <div className="w-full sm:w-auto flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs font-bold">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 rounded-xl transition-all ${
               activeTab === 'profile'
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             <User size={14} />
-            <span>Profile & Address</span>
+            <span className="truncate">Profile & Address</span>
           </button>
           <button
             onClick={() => setActiveTab('orders')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 rounded-xl transition-all ${
               activeTab === 'orders'
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             <Package size={14} />
-            <span>Order History ({orders.length})</span>
+            <span className="truncate">Orders ({orders.length})</span>
           </button>
         </div>
       </div>

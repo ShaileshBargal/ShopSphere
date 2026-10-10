@@ -10,7 +10,17 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const redirectPath = location.state?.from?.pathname || '/';
+  const getRedirectPath = () => {
+    const from = location.state?.from;
+    if (!from) return '/';
+    if (typeof from === 'string') return from;
+    if (from.pathname) {
+      return from.pathname + (from.search || '') + (from.hash || '');
+    }
+    return '/';
+  };
+
+  const redirectPath = getRedirectPath();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,7 +107,11 @@ const LoginPage = () => {
 
           <div className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
             Don't have an account yet?{' '}
-            <Link to="/register" className="font-bold text-teal-600 hover:underline">
+            <Link
+              to="/register"
+              state={{ from: location.state?.from }}
+              className="font-bold text-teal-600 hover:underline"
+            >
               Create one now
             </Link>
           </div>

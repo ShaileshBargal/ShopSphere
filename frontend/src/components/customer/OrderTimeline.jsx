@@ -46,16 +46,17 @@ const OrderTimeline = ({ status }) => {
           return (
             <div key={step.key} className="relative z-10 flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   isCompleted
                     ? 'bg-teal-600 text-white shadow-md shadow-teal-600/30'
                     : 'bg-white border-2 border-slate-300 text-slate-400'
                 } ${isCurrent ? 'ring-4 ring-teal-100 scale-110' : ''}`}
               >
-                <Icon size={18} />
+                <Icon size={16} className="sm:hidden" />
+                <Icon size={18} className="hidden sm:block" />
               </div>
               <span
-                className={`text-[11px] font-semibold mt-2 text-center max-w-[80px] ${
+                className={`text-[9px] sm:text-[11px] font-semibold mt-1.5 sm:mt-2 text-center max-w-[65px] sm:max-w-[80px] leading-tight ${
                   isCompleted ? 'text-slate-800' : 'text-slate-400'
                 }`}
               >

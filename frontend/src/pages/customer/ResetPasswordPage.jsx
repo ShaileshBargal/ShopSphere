@@ -67,7 +67,7 @@ const ResetPasswordPage = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm space-y-5">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-5 sm:p-8 shadow-sm space-y-5">
           {error && (
             <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 flex items-start space-x-2">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />

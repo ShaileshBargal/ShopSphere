@@ -7,11 +7,14 @@ import {
   ShieldCheck,
   Store,
   Truck,
+  LogIn,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 
 const CartPage = () => {
+  const { user } = useAuth();
   const {
     cartItems,
     itemsCount,
@@ -25,6 +28,38 @@ const CartPage = () => {
   } = useCart();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  if (!user) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-20 text-center space-y-6">
+        <div className="w-20 h-20 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+          <ShoppingBag size={36} />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-black text-slate-900">Sign In to View Your Cart</h2>
+          <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
+            Please log in to manage your cart, add items, and complete orders.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            to="/login"
+            state={{ from: '/cart' }}
+            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-6 py-3.5 rounded-2xl shadow-lg shadow-teal-600/20 transition-all"
+          >
+            <LogIn size={15} />
+            <span>Sign In to Your Account</span>
+          </Link>
+          <Link
+            to="/products"
+            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-6 py-3.5 rounded-2xl transition-all"
+          >
+            <span>Browse Products</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -85,7 +120,7 @@ const CartPage = () => {
             </span>
           ) : (
             <span>
-              Add <strong className="text-teal-700">${amountNeededForFreeShipping.toFixed(2)}</strong> more to unlock <strong className="text-teal-700">Free Shipping</strong>!
+              Add <strong className="text-teal-700">₹{amountNeededForFreeShipping.toFixed(2)}</strong> more to unlock <strong className="text-teal-700">Free Shipping</strong>!
             </span>
           )}
         </div>

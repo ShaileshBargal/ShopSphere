@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingBag,
   Store,
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 import RatingStars from '../../components/common/RatingStars';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../context/ToastContext';
@@ -21,6 +22,8 @@ import { useToast } from '../../context/ToastContext';
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
   const { addToCart } = useCart();
   const { isWishlisted, toggleWishlist } = useWishlist();
   const { showToast } = useToast();
@@ -84,15 +87,36 @@ const ProductDetailPage = () => {
       : 0;
 
   const handleAddToCart = () => {
+    if (!user) {
+      showToast('Please sign in to add items to your cart', 'info');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
     if (isOutOfStock) return;
-    addToCart(product, quantity);
+    const result = addToCart(product, quantity);
+    if (result?.requireAuth) {
+      showToast('Please sign in to add items to your cart', 'info');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
     setAddedNotice(true);
+    showToast(`"${product.name}" added to cart!`, 'success');
     setTimeout(() => setAddedNotice(false), 2000);
   };
 
   const handleBuyNow = () => {
+    if (!user) {
+      showToast('Please sign in to proceed with checkout', 'info');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
     if (isOutOfStock) return;
-    addToCart(product, quantity);
+    const result = addToCart(product, quantity);
+    if (result?.requireAuth) {
+      showToast('Please sign in to proceed with checkout', 'info');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
     navigate('/checkout');
   };
 
@@ -281,10 +305,10 @@ const ProductDetailPage = () => {
 
       {/* Tabs: Details / Specs / Reviews */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex border-b border-slate-200 space-x-8 mb-6">
+        <div className="flex border-b border-slate-200 space-x-4 sm:space-x-8 mb-6 overflow-x-auto whitespace-nowrap pb-1">
           <button
             onClick={() => setActiveTab('description')}
-            className={`pb-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 ${
+            className={`pb-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 shrink-0 ${
               activeTab === 'description'
                 ? 'border-teal-600 text-teal-700'
                 : 'border-transparent text-slate-400 hover:text-slate-700'

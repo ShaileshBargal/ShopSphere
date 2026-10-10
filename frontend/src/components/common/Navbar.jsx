@@ -235,15 +235,22 @@ const Navbar = () => {
               <div className="flex items-center space-x-2">
                 <Link
                   to="/login"
-                  className="text-sm font-semibold text-slate-700 hover:text-teal-600 px-3 py-1.5 transition-colors"
+                  className="hidden sm:inline-block text-sm font-semibold text-slate-700 hover:text-teal-600 px-3 py-1.5 transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm hover:shadow transition-all"
+                  className="hidden sm:inline-block bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-3.5 py-2 rounded-xl shadow-sm hover:shadow transition-all"
                 >
                   Register
+                </Link>
+                <Link
+                  to="/login"
+                  className="sm:hidden p-2 text-slate-600 hover:text-teal-600 rounded-lg transition-colors"
+                  title="Sign In"
+                >
+                  <UserIcon size={20} />
                 </Link>
               </div>
             )}
@@ -252,6 +259,7 @@ const Navbar = () => {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 text-slate-600 hover:text-teal-600 hover:bg-slate-100 rounded-lg transition-colors"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -260,29 +268,124 @@ const Navbar = () => {
 
         {/* Mobile Search & Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden pb-4 pt-2 border-t border-slate-100 space-y-3 animate-fade-in">
+          <div className="lg:hidden pb-5 pt-3 border-t border-slate-100 space-y-4 animate-fade-in">
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products..."
+                placeholder="Search products, brands, or vendors..."
                 className="w-full bg-slate-100 border border-slate-200 rounded-xl py-2.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
               <Search size={16} className="absolute left-3 top-3 text-slate-400" />
             </form>
 
-            <div className="flex flex-col space-y-1 text-sm font-medium text-slate-700">
-              <Link to="/" className="px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors">Home</Link>
-              <Link to="/products" className="px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors">All Products</Link>
-              <Link to="/wishlist" className="px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 transition-colors flex items-center space-x-2">
-                <Heart size={15} />
-                <span>Wishlist {wishlistCount > 0 && `(${wishlistCount})`}</span>
-              </Link>
-              {isAdmin && (
-                <Link to="/admin" className="px-3 py-2 rounded-xl bg-teal-50 text-teal-700 font-semibold transition-colors">
-                  Admin Dashboard
+            {/* User status banner on mobile if logged in */}
+            {user ? (
+              <div className="p-3 bg-teal-50/70 border border-teal-200/60 rounded-2xl flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-full bg-teal-600 text-white font-bold flex items-center justify-center text-sm shadow-sm">
+                    {user.name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-900 leading-tight">{user.name}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{user.email}</p>
+                  </div>
+                </div>
+                <span className="text-[9px] font-bold px-2 py-0.5 bg-teal-600 text-white rounded-md uppercase">
+                  {user.role}
+                </span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <Link
+                  to="/login"
+                  className="text-center py-2.5 px-3 rounded-xl border border-slate-200 text-slate-800 font-bold text-xs hover:bg-slate-50 transition-colors"
+                >
+                  Sign In
                 </Link>
+                <Link
+                  to="/register"
+                  className="text-center py-2.5 px-3 rounded-xl bg-teal-600 text-white font-bold text-xs hover:bg-teal-700 transition-colors shadow-sm"
+                >
+                  Create Account
+                </Link>
+              </div>
+            )}
+
+            <div className="flex flex-col space-y-1 text-sm font-medium text-slate-700">
+              <Link to="/" className="px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors">
+                Home
+              </Link>
+              <Link to="/products" className="px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors">
+                All Products
+              </Link>
+              <Link
+                to="/cart"
+                className="px-3 py-2 rounded-xl hover:bg-teal-50 text-slate-700 hover:text-teal-700 transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-2">
+                  <ShoppingBag size={16} className="text-teal-600" />
+                  <span>Shopping Cart</span>
+                </div>
+                {user && itemsCount > 0 && (
+                  <span className="bg-teal-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">
+                    {itemsCount}
+                  </span>
+                )}
+              </Link>
+              <Link
+                to="/wishlist"
+                className="px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center space-x-2">
+                  <Heart size={16} />
+                  <span>Wishlist</span>
+                </div>
+                {wishlistCount > 0 && (
+                  <span className="bg-rose-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              {user && (
+                <>
+                  <Link
+                    to="/profile"
+                    className="px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors flex items-center space-x-2"
+                  >
+                    <UserIcon size={16} className="text-slate-500" />
+                    <span>My Profile</span>
+                  </Link>
+                  <Link
+                    to="/profile#orders"
+                    className="px-3 py-2 rounded-xl hover:bg-slate-100 transition-colors flex items-center space-x-2"
+                  >
+                    <Package size={16} className="text-slate-500" />
+                    <span>My Orders</span>
+                  </Link>
+                </>
+              )}
+
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="px-3 py-2 rounded-xl bg-teal-50 text-teal-800 font-bold transition-colors flex items-center space-x-2"
+                >
+                  <LayoutDashboard size={16} className="text-teal-700" />
+                  <span>Admin Dashboard</span>
+                </Link>
+              )}
+
+              {user && (
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 font-semibold transition-colors flex items-center space-x-2 pt-2 border-t border-slate-100"
+                >
+                  <LogOut size={16} />
+                  <span>Sign Out</span>
+                </button>
               )}
             </div>
           </div>

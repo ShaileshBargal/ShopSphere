@@ -136,7 +136,7 @@ const OrderDetailPage = () => {
       </div>
 
       {/* Visual Timeline Tracking */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-4">
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-8 shadow-sm space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
           Delivery Status Progress
         </h3>
@@ -146,7 +146,7 @@ const OrderDetailPage = () => {
       {/* Shipping & Payment Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Shipping Address Card */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-3">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-6 shadow-sm space-y-3">
           <div className="flex items-center space-x-2 text-slate-900 font-bold text-sm">
             <MapPin size={18} className="text-teal-600" />
             <span>Shipping Information</span>
@@ -163,7 +163,7 @@ const OrderDetailPage = () => {
         </div>
 
         {/* Payment Details Card */}
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-3">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-6 shadow-sm space-y-3">
           <div className="flex items-center space-x-2 text-slate-900 font-bold text-sm">
             <CreditCard size={18} className="text-teal-600" />
             <span>Payment Summary</span>
@@ -203,7 +203,7 @@ const OrderDetailPage = () => {
       </div>
 
       {/* Items Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-sm space-y-4">
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-4 sm:p-8 shadow-sm space-y-4">
         <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
           Ordered Items ({order.orderItems?.length})
         </h3>

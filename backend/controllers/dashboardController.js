@@ -50,6 +50,12 @@ export const getDashboardStats = async (req, res) => {
       .select('name price countInStock images vendor')
       .limit(5);
 
+    // Recent products for dashboard display
+    const recentProducts = await Product.find({})
+      .populate('category', 'name slug')
+      .sort({ createdAt: -1 })
+      .limit(6);
+
     res.json({
       metrics: {
         totalRevenue,
@@ -62,6 +68,7 @@ export const getDashboardStats = async (req, res) => {
       orderStatusMap,
       recentOrders,
       lowStockProducts,
+      recentProducts,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

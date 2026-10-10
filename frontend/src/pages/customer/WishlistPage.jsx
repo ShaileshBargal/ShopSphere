@@ -1,29 +1,37 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Heart, Trash2, ShoppingCart, ArrowLeft, PackageSearch } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Heart, Trash2, ShoppingCart, ArrowLeft, PackageSearch, Star } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
-import { Star } from 'lucide-react';
 
 const WishlistPage = () => {
+  const { user } = useAuth();
   const { wishlistItems, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAddToCart = (product) => {
+    if (!user) {
+      showToast('Please sign in to add items to your cart', 'info');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     if (product.countInStock === 0) {
       showToast('This product is currently out of stock.', 'warning');
       return;
     }
-    addToCart({
-      product: product._id,
-      name: product.name,
-      image: product.images[0],
-      price: product.price,
-      countInStock: product.countInStock,
-      vendor: product.vendor?.storeName || '',
-    });
+
+    const result = addToCart(product, 1);
+    if (result?.requireAuth) {
+      showToast('Please sign in to add items to your cart', 'info');
+      navigate('/login', { state: { from: location } });
+      return;
+    }
     showToast(`"${product.name}" added to cart!`, 'success');
   };
 

@@ -82,16 +82,28 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/payment', paymentRoutes);
 
 // In production or when frontend/dist exists, serve frontend static files
-const frontendDistPath = path.resolve(__dirname, '../frontend/dist');
-if (fs.existsSync(frontendDistPath)) {
+const possibleDistPaths = [
+  path.resolve(__dirname, '../frontend/dist'),
+  path.resolve(process.cwd(), 'frontend/dist'),
+  path.resolve(process.cwd(), 'dist'),
+  path.resolve(__dirname, 'dist'),
+];
+
+const frontendDistPath = possibleDistPaths.find((p) => fs.existsSync(p));
+
+if (frontendDistPath) {
+  console.log(`[ShopSphere] Serving frontend static assets from: ${frontendDistPath}`);
   app.use(express.static(frontendDistPath));
-  // Any route not starting with /api should serve frontend's index.html
+
+  // Any non-API route serves index.html for React Router SPA
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) {
       return next();
     }
     res.sendFile(path.join(frontendDistPath, 'index.html'));
   });
+} else {
+  console.warn('[ShopSphere Warning] frontend/dist directory was not found. SPA routes will not be served statically by Express.');
 }
 
 // Error Handling Middleware (for unhandled /api routes)

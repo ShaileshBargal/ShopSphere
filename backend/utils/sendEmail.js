@@ -1,73 +1,45 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 /**
- * Creates a Nodemailer transporter using Google Gmail App Password SMTP.
- * Requires EMAIL_USER and EMAIL_APP_PASSWORD in backend/.env
- */
-export const createTransporter = (port = 587) => {
-  const user = process.env.EMAIL_USER || 'shaileshbargal@gmail.com';
-  const pass = (process.env.EMAIL_APP_PASSWORD || 'vriogqvarqmdckoo').replace(/\s+/g, '');
-
-  if (port === 465) {
-    return nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: { user, pass },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
-  }
-
-  // Port 587 STARTTLS (standard for cloud platforms like Render, AWS, Heroku)
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: { user, pass },
-    tls: {
-      rejectUnauthorized: false,
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
-  });
-};
-
-/**
- * Sends generic email with automatic port fallback (587 -> 465)
+ * Send email via Resend HTTP API (works on all cloud platforms - no SMTP ports needed)
+ * Requires RESEND_API_KEY in environment variables.
+ * Get a free API key at https://resend.com (3000 emails/month free)
  */
 export const sendEmail = async ({ to, subject, html, text }) => {
-  const senderEmail = process.env.EMAIL_USER || 'shaileshbargal@gmail.com';
-  const mailOptions = {
-    from: process.env.EMAIL_FROM || `"ShopSphere Security" <${senderEmail}>`,
-    to,
-    subject,
-    text: text || 'ShopSphere Notification',
-    html,
-  };
+  const apiKey = process.env.RESEND_API_KEY;
 
-  try {
-    const transporter587 = createTransporter(587);
-    const info = await transporter587.sendMail(mailOptions);
-    console.log(`[Email Sent via Port 587] Message ID: ${info.messageId} to ${to}`);
-    return info;
-  } catch (err587) {
-    console.warn(`[SMTP Port 587 failed: ${err587.message}]. Retrying with Port 465 SSL...`);
-    const transporter465 = createTransporter(465);
-    const info = await transporter465.sendMail(mailOptions);
-    console.log(`[Email Sent via Port 465] Message ID: ${info.messageId} to ${to}`);
-    return info;
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY is not set in environment variables. Get a free key at https://resend.com');
   }
+
+  const resend = new Resend(apiKey);
+
+  // Sender: use verified custom domain if set, otherwise Resend's sandbox sender
+  const from = process.env.EMAIL_FROM || 'ShopSphere Security <onboarding@resend.dev>';
+
+  const { data, error } = await resend.emails.send({
+    from,
+    to: Array.isArray(to) ? to : [to],
+    subject,
+    html,
+    text: text || subject,
+  });
+
+  if (error) {
+    console.error('[Resend Email Error]', error);
+    throw new Error(error.message || 'Failed to send email via Resend');
+  }
+
+  console.log(`[Resend Email Sent] ID: ${data.id} → to: ${to}`);
+  return data;
 };
 
 /**
- * Sends specialized OTP Email for Password Reset
+ * Sends OTP email for Password Reset
  */
 export const sendOtpEmail = async (toEmail, otp, name = 'Valued Customer') => {
   const subject = `Your ShopSphere Password Reset OTP: ${otp}`;
+
   const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -94,7 +66,7 @@ export const sendOtpEmail = async (toEmail, otp, name = 'Valued Customer') => {
         <div class="title">Password Reset Request</div>
         <p class="text">
           Hello ${name},<br/><br/>
-          We received a request to reset your password for your ShopSphere account. Please use the following 6-digit One-Time Password (OTP) to complete the reset:
+          We received a request to reset your password for your ShopSphere account. Use the following 6-digit One-Time Password (OTP) to complete the reset:
         </p>
         <div class="otp-box">
           <div class="otp-code">${otp}</div>
@@ -102,11 +74,10 @@ export const sendOtpEmail = async (toEmail, otp, name = 'Valued Customer') => {
         </div>
         <div class="badge">⏱️ This OTP is valid for 10 minutes</div>
         <p class="text" style="font-size: 13px; color: #64748b;">
-          If you did not request this password reset, please ignore this email or contact support if you suspect unauthorized access. Never share this code with anyone.
+          If you did not request this password reset, please ignore this email. Never share this code with anyone.
         </p>
         <div class="footer">
-          &copy; ${new Date().getFullYear()} ShopSphere Inc. All rights reserved.<br/>
-          Secure verification powered by Google App Password SMTP Service.
+          &copy; ${new Date().getFullYear()} ShopSphere Inc. All rights reserved.
         </div>
       </div>
     </body>

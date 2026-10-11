@@ -65,6 +65,13 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -74,7 +81,20 @@ app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/payment', paymentRoutes);
 
-// Error Handling Middleware
+// In production or when frontend/dist exists, serve frontend static files
+const frontendDistPath = path.resolve(__dirname, '../frontend/dist');
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  // Any route not starting with /api should serve frontend's index.html
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
+
+// Error Handling Middleware (for unhandled /api routes)
 app.use(notFound);
 app.use(errorHandler);
 
@@ -83,3 +103,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`[ShopSphere Server] Running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
+

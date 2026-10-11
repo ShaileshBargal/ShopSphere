@@ -216,7 +216,7 @@ const ProductsPage = () => {
         {/* Products Grid */}
         <div className="lg:col-span-3">
           {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[1, 2, 3, 4, 5, 6].map((n) => (
                 <div
                   key={n}
@@ -242,7 +242,7 @@ const ProductsPage = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                 {products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}

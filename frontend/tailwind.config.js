@@ -20,6 +20,9 @@ export default {
           900: '#134e4a',
         },
       },
+      screens: {
+        'xs': '480px',
+      },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },

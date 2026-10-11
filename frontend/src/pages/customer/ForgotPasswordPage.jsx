@@ -139,7 +139,12 @@ const ForgotPasswordPage = () => {
       const { data } = await axiosInstance.post('/auth/send-otp', { email });
       setSuccessMessage(data.message || `OTP has been sent to ${email}`);
       setStep(2);
-      setOtp(['', '', '', '', '', '']);
+      if (data.otp || data.devOtp) {
+        const fallbackCode = (data.otp || data.devOtp).toString();
+        setOtp(fallbackCode.split('').slice(0, 6));
+      } else {
+        setOtp(['', '', '', '', '', '']);
+      }
       setTimeLeft(600);
       setResendCooldown(30);
     } catch (err) {
@@ -162,7 +167,12 @@ const ForgotPasswordPage = () => {
     try {
       const { data } = await axiosInstance.post('/auth/send-otp', { email });
       setSuccessMessage(data.message || `A fresh OTP has been sent to ${email}`);
-      setOtp(['', '', '', '', '', '']);
+      if (data.otp || data.devOtp) {
+        const fallbackCode = (data.otp || data.devOtp).toString();
+        setOtp(fallbackCode.split('').slice(0, 6));
+      } else {
+        setOtp(['', '', '', '', '', '']);
+      }
       setTimeLeft(600);
       setResendCooldown(30);
     } catch (err) {

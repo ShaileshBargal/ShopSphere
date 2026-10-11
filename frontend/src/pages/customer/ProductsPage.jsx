@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { Filter, SlidersHorizontal, PackageSearch } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 import ProductCard from '../../components/customer/ProductCard';
@@ -7,10 +7,11 @@ import FilterSidebar from '../../components/customer/FilterSidebar';
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const params = useParams();
 
   // URL state
   const searchQuery = searchParams.get('search') || '';
-  const initialCategory = searchParams.get('category') || 'all';
+  const initialCategory = params.slug || searchParams.get('category') || 'all';
 
   // Filter state
   const [products, setProducts] = useState([]);
@@ -28,8 +29,8 @@ const ProductsPage = () => {
 
   // Sync category with URL changes
   useEffect(() => {
-    setSelectedCategory(searchParams.get('category') || 'all');
-  }, [searchParams]);
+    setSelectedCategory(params.slug || searchParams.get('category') || 'all');
+  }, [searchParams, params.slug]);
 
   // Load categories
   useEffect(() => {

@@ -14,12 +14,12 @@ import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../api/axiosInstance';
 import StatusBadge from '../../components/common/StatusBadge';
 
-const ProfilePage = () => {
+const ProfilePage = ({ defaultTab }) => {
   const { user, updateProfile } = useAuth();
   const location = useLocation();
 
   const [activeTab, setActiveTab] = useState(
-    location.hash === '#orders' ? 'orders' : 'profile'
+    defaultTab || (location.hash === '#orders' ? 'orders' : 'profile')
   );
 
   // Form states

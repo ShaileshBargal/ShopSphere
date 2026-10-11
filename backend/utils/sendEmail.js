@@ -4,17 +4,31 @@ import nodemailer from 'nodemailer';
  * Creates a Nodemailer transporter using Google Gmail App Password SMTP.
  * Requires EMAIL_USER and EMAIL_APP_PASSWORD in backend/.env
  */
-export const createTransporter = () => {
+export const createTransporter = (port = 587) => {
   const user = process.env.EMAIL_USER || 'shaileshbargal@gmail.com';
   const pass = (process.env.EMAIL_APP_PASSWORD || 'vriogqvarqmdckoo').replace(/\s+/g, '');
 
+  if (port === 465) {
+    return nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: { user, pass },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+    });
+  }
+
+  // Port 587 STARTTLS (standard for cloud platforms like Render, AWS, Heroku)
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user,
-      pass,
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: { user, pass },
+    tls: {
+      rejectUnauthorized: false,
     },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
@@ -23,12 +37,10 @@ export const createTransporter = () => {
 };
 
 /**
- * Sends generic email
+ * Sends generic email with automatic port fallback (587 -> 465)
  */
 export const sendEmail = async ({ to, subject, html, text }) => {
-  const transporter = createTransporter();
   const senderEmail = process.env.EMAIL_USER || 'shaileshbargal@gmail.com';
-
   const mailOptions = {
     from: process.env.EMAIL_FROM || `"ShopSphere Security" <${senderEmail}>`,
     to,
@@ -37,9 +49,18 @@ export const sendEmail = async ({ to, subject, html, text }) => {
     html,
   };
 
-  const info = await transporter.sendMail(mailOptions);
-  console.log(`[Email Sent] Message ID: ${info.messageId} to ${to}`);
-  return info;
+  try {
+    const transporter587 = createTransporter(587);
+    const info = await transporter587.sendMail(mailOptions);
+    console.log(`[Email Sent via Port 587] Message ID: ${info.messageId} to ${to}`);
+    return info;
+  } catch (err587) {
+    console.warn(`[SMTP Port 587 failed: ${err587.message}]. Retrying with Port 465 SSL...`);
+    const transporter465 = createTransporter(465);
+    const info = await transporter465.sendMail(mailOptions);
+    console.log(`[Email Sent via Port 465] Message ID: ${info.messageId} to ${to}`);
+    return info;
+  }
 };
 
 /**

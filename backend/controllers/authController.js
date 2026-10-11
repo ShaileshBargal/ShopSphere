@@ -166,7 +166,7 @@ export const forgotPassword = async (req, res) => {
     } catch (err) {
       console.error(`[ShopSphere] Failed to deliver OTP email to ${user.email}:`, err.message);
       return res.status(500).json({
-        message: `Unable to deliver OTP email to ${user.email}. Please verify your email or try again shortly.`,
+        message: `Failed to deliver OTP to ${user.email}: ${err.message}`,
       });
     }
   } catch (error) {

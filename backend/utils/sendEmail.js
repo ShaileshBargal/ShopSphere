@@ -14,8 +14,12 @@ export const sendEmail = async ({ to, subject, html, text }) => {
 
   const resend = new Resend(apiKey);
 
-  // Sender: use verified custom domain if set, otherwise Resend's sandbox sender
-  const from = process.env.EMAIL_FROM || 'ShopSphere Security <onboarding@resend.dev>';
+  // Resend only allows verified domains or onboarding@resend.dev.
+  // Never send from @gmail.com directly using Resend.
+  let from = 'ShopSphere <onboarding@resend.dev>';
+  if (process.env.EMAIL_FROM && !process.env.EMAIL_FROM.includes('@gmail.com')) {
+    from = process.env.EMAIL_FROM;
+  }
 
   const { data, error } = await resend.emails.send({
     from,
